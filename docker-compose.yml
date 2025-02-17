@@ -1,0 +1,36 @@
+services: 
+  rdt-reminder-telegram-bot: 
+    container_name: rdt-reminder-telegram-bot
+    build:
+      context: .
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - TIMEZONE=Asia/Tashkent
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports: 
+      - "${MONGODB_PORT:-27017}:27017"
+    volumes: 
+      - rdt_reminder_telegram_bot_mongo_db_data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+      - TIMEZONE=Asia/Tashkent
+
+volumes:
+  rdt_reminder_telegram_bot_mongo_db_data:
